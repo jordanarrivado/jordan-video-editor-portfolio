@@ -4,11 +4,11 @@ A single-page portfolio showcasing Jordan's video editing work, services, proces
 
 ## View locally
 
-Open `jordan-video-editor-portfolio.html` in a modern web browser. No build step or package installation is required.
+Open `index.html` in a modern web browser. No build step or package installation is required.
 
 ## Project structure
 
-- `jordan-video-editor-portfolio.html` — portfolio page, styles, and interactions
+- `index.html` — portfolio page, styles, and interactions
 - `assets/images/` — image assets
 - `assets/video/` — portfolio reels and introduction video
 
@@ -24,4 +24,3 @@ git lfs pull
 ## Contact
 
 [j0rdanarrivado@gmail.com](mailto:j0rdanarrivado@gmail.com)
-
