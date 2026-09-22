@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="Jordan is a remote video editor for creators and small teams. Watch short-form, talking-head, and commercial editing samples."
+      content="Jordan is a remote video editor for creators and small teams. Watch UGC, short-form, talking-head, and commercial editing samples."
     />
     <title>Jordan — Video Editor</title>
     <style>
@@ -886,7 +886,7 @@
       <section class="section fade-up" id="work">
         <div class="section-head">
           <div>
-            <p>Four playable examples</p>
+            <p>Five playable examples</p>
             <h2>Choose a video to watch</h2>
           </div>
         </div>
@@ -907,6 +907,24 @@
               ><small>COMMERCIAL</small>
               <h3>Food Product Video</h3>
               <p>A polished video created to promote a product</p></span
+            >
+          </button>
+          <button
+            class="project-card card-3"
+            data-project="niacinamide"
+            aria-label="Play Niacinamide UGC Video"
+          >
+            <video class="card-media" muted playsinline preload="metadata">
+              <source
+                src="assets/video/Niacinamide.mp4#t=0.1"
+                type="video/mp4"
+              />
+            </video>
+            <span class="play-mini">▶</span
+            ><span class="card-copy"
+              ><small>UGC</small>
+              <h3>Niacinamide Skincare Video</h3>
+              <p>A creator-style product video made for social media</p></span
             >
           </button>
           <button
@@ -1077,6 +1095,13 @@
             "A polished promotional video that uses quick cuts, sound, and close product shots to make the food look appealing.",
           tags: ["Product video", "Food", "Sound", "Color"],
           video: "assets/video/burger-final.mp4",
+        },
+        niacinamide: {
+          title: "Niacinamide Skincare Video",
+          description:
+            "A creator-style skincare video edited to present the niacinamide product clearly and keep the content engaging for social media.",
+          tags: ["UGC", "Skincare", "Product video", "Social media"],
+          video: "assets/video/Niacinamide.mp4",
         },
         talkingHead: {
           title: "Speaker Video 1",
