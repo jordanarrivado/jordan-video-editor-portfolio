@@ -314,7 +314,7 @@
       .project-media {
         position: relative;
         width: 290px;
-        height: 100px ;
+        height: 100px;
         aspect-ratio: var(--video-ratio, 16/9);
         overflow: hidden;
         padding: 0;
@@ -469,7 +469,9 @@
       }
 
       .intro-media {
-        aspect-ratio: 4/5;
+        width: min(100%, 380px);
+        aspect-ratio: 9 / 16;
+        justify-self: center;
         overflow: hidden;
         border-radius: var(--radius);
         background: #ddd;
@@ -721,12 +723,51 @@
             <h3 class="category-title">Product Content</h3>
             <span class="category-count">05 projects</span>
           </div>
-          <div class="ugc-tabs reveal" role="group" aria-label="Filter product content videos">
-            <button class="ugc-tab active" type="button" data-ugc-filter="all" aria-pressed="true">All</button>
-            <button class="ugc-tab" type="button" data-ugc-filter="food" aria-pressed="false">Food</button>
-            <button class="ugc-tab" type="button" data-ugc-filter="gadget" aria-pressed="false">Gadget</button>
-            <button class="ugc-tab" type="button" data-ugc-filter="skincare" aria-pressed="false">Skincare</button>
-            <button class="ugc-tab" type="button" data-ugc-filter="other" aria-pressed="false">Other</button>
+          <div
+            class="ugc-tabs reveal"
+            role="group"
+            aria-label="Filter product content videos"
+          >
+            <button
+              class="ugc-tab active"
+              type="button"
+              data-ugc-filter="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+            <button
+              class="ugc-tab"
+              type="button"
+              data-ugc-filter="food"
+              aria-pressed="false"
+            >
+              Food
+            </button>
+            <button
+              class="ugc-tab"
+              type="button"
+              data-ugc-filter="gadget"
+              aria-pressed="false"
+            >
+              Gadget
+            </button>
+            <button
+              class="ugc-tab"
+              type="button"
+              data-ugc-filter="skincare"
+              aria-pressed="false"
+            >
+              Skincare
+            </button>
+            <button
+              class="ugc-tab"
+              type="button"
+              data-ugc-filter="other"
+              aria-pressed="false"
+            >
+              Other
+            </button>
           </div>
           <div class="work-grid">
             <article class="project reveal" data-ugc-category="food">
@@ -755,12 +796,7 @@
                 data-video="assets/video/Niacinamide.mp4"
                 aria-label="Play Niacinamide product video"
               >
-                <video
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                >
+                <video muted loop playsinline preload="metadata">
                   <source src="assets/video/Niacinamide.mp4" type="video/mp4" />
                 </video>
               </button>
@@ -897,12 +933,7 @@
                 data-video="assets/video/short-form-1.mp4"
                 aria-label="Play short-form social edit"
               >
-                <video
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                >
+                <video muted loop playsinline preload="metadata">
                   <source
                     src="assets/video/short-form-1.mp4"
                     type="video/mp4"
@@ -968,12 +999,7 @@
                 data-video="assets/video/burger-final.mp4"
                 aria-label="Play food commercial"
               >
-                <video
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                >
+                <video muted loop playsinline preload="metadata">
                   <source
                     src="assets/video/burger-final.mp4"
                     type="video/mp4"
@@ -991,12 +1017,11 @@
       <section class="section shell" id="about">
         <div class="about-grid">
           <div class="intro-media reveal">
-            <video
-              controls
-              playsinline
-              preload="metadata"
-            >
-              <source src="assets/video/introduction.mp4" type="video/mp4" />
+            <video controls playsinline preload="metadata">
+              <source
+                src="assets/video/self-introduction.mp4"
+                type="video/mp4"
+              />
             </video>
           </div>
           <div class="about-copy reveal">
@@ -1067,7 +1092,8 @@
           });
           ugcEmpty.hidden = visibleProjects > 0;
           ugcCount.textContent =
-            visibleProjects + (visibleProjects === 1 ? " project" : " projects");
+            visibleProjects +
+            (visibleProjects === 1 ? " project" : " projects");
         }),
       );
       buttons.forEach((button) => {
@@ -1148,5 +1174,36 @@
         video.setAttribute("disablePictureInPicture", "");
       });
     </script>
+    <a
+      href="https://wa.me/639762307896"
+      class="whatsapp-contact"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Chat with me on WhatsApp at 0 976 230 7896"
+      style="
+        position: fixed;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        z-index: 1000;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.75rem 1rem;
+        border-radius: 999px;
+        background: #25d366;
+        color: #fff;
+        text-decoration: none;
+        font:
+          600 0.9rem/1 system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          &quot;Segoe UI&quot;,
+          sans-serif;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+      "
+    >
+      <span aria-hidden="true">WhatsApp</span>
+      <span>+63976 230 7896</span>
+    </a>
   </body>
 </html>
