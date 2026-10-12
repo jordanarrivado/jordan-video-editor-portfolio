@@ -16,3 +16,7 @@ Desktop.ini
 *.log
 *.tmp
 
+# Local video compression working files and source backups
+.video-compression-temp/
+.video-originals/
+
