@@ -388,6 +388,7 @@
         background-color: transparent;
       }
 
+      #featured-work .project-media.phone-reel video,
       #ugc .project-media.phone-reel video,
       #short-form-content .project-media.phone-reel video {
         position: absolute;
@@ -404,12 +405,14 @@
         z-index: 3;
       }
 
+      #featured-work .work-grid,
       #short-form-content .work-grid {
         grid-template-columns: repeat(4, minmax(0, 240px));
         justify-content: space-between;
         gap: 18px;
       }
 
+      #featured-work .project-media.phone-reel,
       #short-form-content .project-media.phone-reel {
         justify-self: start;
       }
@@ -601,6 +604,7 @@
       }
 
       @media (min-width: 761px) and (max-width: 1050px) {
+        #featured-work .work-grid,
         #ugc .work-grid,
         #short-form-content .work-grid {
           grid-template-columns: repeat(2, minmax(0, 240px));
@@ -717,11 +721,159 @@
       </nav>
     </header>
     <main id="top">
+      <section class="section shell" id="about">
+        <div class="about-grid">
+          <div class="intro-media reveal">
+            <video controls playsinline preload="metadata">
+              <source
+                src="assets/video/self-introduction.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
+          <div class="about-copy reveal">
+            <span class="eyebrow">Meet your editor</span>
+            <h2>I shape raw footage into stories people want to watch.</h2>
+            <p>
+              Clean pacing, purposeful motion, and edits made for the platform
+              they live on.
+            </p>
+            <a
+              class="text-link"
+              href="mailto:j0rdanarrivado@gmail.com?subject=Video%20editing%20project"
+              >Start a project &nearr;</a
+            >
+          </div>
+        </div>
+      </section>
       <section class="section shell" id="work">
+        <section class="category" id="featured-work">
+          <div class="category-head reveal">
+            <h3 class="category-title">Featured Work</h3>
+            <span class="category-count">06 projects</span>
+          </div>
+          <div class="work-grid">
+            <article class="project reveal">
+              <button
+                class="project-media phone-reel"
+                type="button"
+                data-video="assets/video/Areo-English.mp4"
+                aria-label="Play Areo English short-form ad"
+              >
+                <video muted loop playsinline preload="none">
+                  <source
+                    src="assets/video/Areo-English.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </button>
+              <div class="project-copy">
+                <h3 class="project-title">Areo &mdash; English</h3>
+                <p class="project-type">Short-form ad</p>
+              </div>
+            </article>
+            <article class="project reveal">
+              <button
+                class="project-media phone-reel"
+                type="button"
+                data-video="assets/video/Areo-Spanish.mp4"
+                aria-label="Play Areo Spanish short-form ad"
+              >
+                <video muted loop playsinline preload="none">
+                  <source
+                    src="assets/video/Areo-Spanish.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </button>
+              <div class="project-copy">
+                <h3 class="project-title">Areo &mdash; Spanish</h3>
+                <p class="project-type">Short-form ad</p>
+              </div>
+            </article>
+            <article class="project reveal">
+              <button
+                class="project-media phone-reel"
+                type="button"
+                data-video="assets/video/boya mic project.mp4"
+                aria-label="Play Boya microphone product video"
+              >
+                <video muted loop playsinline preload="none">
+                  <source
+                    src="assets/video/boya mic project.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </button>
+              <div class="project-copy">
+                <h3 class="project-title">Boya Mic</h3>
+                <p class="project-type">Tech product</p>
+              </div>
+            </article>
+            <article class="project reveal">
+              <button
+                class="project-media phone-reel"
+                type="button"
+                data-video="assets/video/protein shake project.mp4"
+                aria-label="Play Protein Shake product video"
+              >
+                <video muted loop playsinline preload="none">
+                  <source
+                    src="assets/video/protein shake project.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </button>
+              <div class="project-copy">
+                <h3 class="project-title">Protein Shake</h3>
+                <p class="project-type">Food &amp; beverage</p>
+              </div>
+            </article>
+            <article class="project reveal">
+              <button
+                class="project-media phone-reel"
+                type="button"
+                data-video="assets/video/Deep Collagen.mp4"
+                aria-label="Play Deep Collagen product video"
+              >
+                <video muted loop playsinline preload="none">
+                  <source
+                    src="assets/video/Deep Collagen.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </button>
+              <div class="project-copy">
+                <h3 class="project-title">Deep Collagen</h3>
+                <p class="project-type">Skincare</p>
+              </div>
+            </article>
+            <article class="project reveal">
+              <button
+                class="project-media phone-reel"
+                type="button"
+                data-video="assets/video/German-talking-head.mp4"
+                aria-label="Play German talking-head edit"
+              >
+                <video muted loop playsinline preload="none">
+                  <source
+                    src="assets/video/German-talking-head.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </button>
+              <div class="project-copy">
+                <h3 class="project-title">German Talking Head</h3>
+                <p class="project-type">Talking head</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
         <section class="category" id="ugc">
           <div class="category-head reveal">
             <h3 class="category-title">Product Content</h3>
-            <span class="category-count">05 projects</span>
+            <span class="category-count">04 projects</span>
           </div>
           <div
             class="ugc-tabs reveal"
@@ -805,25 +957,6 @@
                 <p class="project-type">Skincare</p>
               </div>
             </article>
-            <article class="project reveal" data-ugc-category="skincare">
-              <button
-                class="project-media phone-reel"
-                type="button"
-                data-video="assets/video/Deep Collagen.mp4"
-                aria-label="Play Deep Collagen product video"
-              >
-                <video muted loop playsinline preload="none">
-                  <source
-                    src="assets/video/Deep Collagen.mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </button>
-              <div class="project-copy">
-                <h3 class="project-title">Deep Collagen</h3>
-                <p class="project-type">Skincare</p>
-              </div>
-            </article>
             <article class="project reveal" data-ugc-category="gadget">
               <button
                 class="project-media phone-reel"
@@ -866,7 +999,7 @@
         <section class="category" id="short-form-content">
           <div class="category-head reveal">
             <h3 class="category-title">Short-form Content</h3>
-            <span class="category-count">06 projects</span>
+            <span class="category-count">03 projects</span>
           </div>
           <div class="work-grid">
             <article class="project reveal">
@@ -911,25 +1044,6 @@
               <button
                 class="project-media phone-reel"
                 type="button"
-                data-video="assets/video/German-talking-head.mp4"
-                aria-label="Play German talking-head edit"
-              >
-                <video muted loop playsinline preload="none">
-                  <source
-                    src="assets/video/German-talking-head.mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </button>
-              <div class="project-copy">
-                <h3 class="project-title">German Talking Head</h3>
-                <p class="project-type">Talking head</p>
-              </div>
-            </article>
-            <article class="project reveal">
-              <button
-                class="project-media phone-reel"
-                type="button"
                 data-video="assets/video/short-form-1.mp4"
                 aria-label="Play short-form social edit"
               >
@@ -943,44 +1057,6 @@
               <div class="project-copy">
                 <h3 class="project-title">Social Cut</h3>
                 <p class="project-type">Short-form</p>
-              </div>
-            </article>
-            <article class="project reveal">
-              <button
-                class="project-media phone-reel"
-                type="button"
-                data-video="assets/video/Areo-English.mp4"
-                aria-label="Play Areo English short-form ad"
-              >
-                <video muted loop playsinline preload="none">
-                  <source
-                    src="assets/video/Areo-English.mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </button>
-              <div class="project-copy">
-                <h3 class="project-title">Areo — English</h3>
-                <p class="project-type">Short-form ad</p>
-              </div>
-            </article>
-            <article class="project reveal">
-              <button
-                class="project-media phone-reel"
-                type="button"
-                data-video="assets/video/Areo-Spanish.mp4"
-                aria-label="Play Areo Spanish short-form ad"
-              >
-                <video muted loop playsinline preload="none">
-                  <source
-                    src="assets/video/Areo-Spanish.mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </button>
-              <div class="project-copy">
-                <h3 class="project-title">Areo — Spanish</h3>
-                <p class="project-type">Short-form ad</p>
               </div>
             </article>
           </div>
@@ -1013,31 +1089,6 @@
             </article>
           </div>
         </section>
-      </section>
-      <section class="section shell" id="about">
-        <div class="about-grid">
-          <div class="intro-media reveal">
-            <video controls playsinline preload="metadata">
-              <source
-                src="assets/video/self-introduction.mp4"
-                type="video/mp4"
-              />
-            </video>
-          </div>
-          <div class="about-copy reveal">
-            <span class="eyebrow">Meet your editor</span>
-            <h2>I shape raw footage into stories people want to watch.</h2>
-            <p>
-              Clean pacing, purposeful motion, and edits made for the platform
-              they live on.
-            </p>
-            <a
-              class="text-link"
-              href="mailto:j0rdanarrivado@gmail.com?subject=Video%20editing%20project"
-              >Start a project &nearr;</a
-            >
-          </div>
-        </div>
       </section>
       <section class="section contact shell" id="contact">
         <div class="contact-card reveal">
