@@ -517,6 +517,17 @@
         margin-top: 30px;
       }
 
+      .about-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 28px;
+        margin-top: 30px;
+      }
+
+      .about-actions .text-link {
+        margin-top: 0;
+      }
+
       .contact {
         padding-bottom: clamp(60px, 8vw, 110px);
       }
@@ -716,6 +727,11 @@
         <a class="brand" href="#top">Jordan / Video Editor</a>
         <div class="nav-links">
           <a href="#work">Work</a><a href="#about">About</a
+          ><a
+            href="assets/Credentials/Jordan_Arrivado_Video_Editor_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Resume</a
           ><a href="#contact">Contact</a>
         </div>
       </nav>
@@ -724,7 +740,12 @@
       <section class="section shell" id="about">
         <div class="about-grid">
           <div class="intro-media reveal">
-            <video controls playsinline preload="metadata">
+            <video
+              controls
+              playsinline
+              preload="metadata"
+              poster="assets/images/Jordan_ Video Editor _Thumbnail.png"
+            >
               <source
                 src="assets/video/self-introduction.mp4"
                 type="video/mp4"
@@ -738,11 +759,20 @@
               Clean pacing, purposeful motion, and edits made for the platform
               they live on.
             </p>
-            <a
-              class="text-link"
-              href="mailto:j0rdanarrivado@gmail.com?subject=Video%20editing%20project"
-              >Start a project &nearr;</a
-            >
+            <div class="about-actions">
+              <a
+                class="text-link"
+                href="mailto:j0rdanarrivado@gmail.com?subject=Video%20editing%20project"
+                >Start a project &nearr;</a
+              >
+              <a
+                class="text-link"
+                href="assets/Credentials/Jordan_Arrivado_Video_Editor_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                >View resume &nearr;</a
+              >
+            </div>
           </div>
         </div>
       </section>
@@ -760,7 +790,13 @@
                 data-video="assets/video/Areo-English.mp4"
                 aria-label="Play Areo English short-form ad"
               >
-                <video muted loop playsinline preload="none">
+                <video
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="assets/images/thumbnail.png"
+                >
                   <source
                     src="assets/video/Areo-English.mp4"
                     type="video/mp4"
@@ -779,7 +815,13 @@
                 data-video="assets/video/Areo-Spanish.mp4"
                 aria-label="Play Areo Spanish short-form ad"
               >
-                <video muted loop playsinline preload="none">
+                <video
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="assets/images/thumbnail.png"
+                >
                   <source
                     src="assets/video/Areo-Spanish.mp4"
                     type="video/mp4"
@@ -798,7 +840,13 @@
                 data-video="assets/video/boya mic project.mp4"
                 aria-label="Play Boya microphone product video"
               >
-                <video muted loop playsinline preload="none">
+                <video
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="assets/images/BOYA V20 Honest Review Setup.png"
+                >
                   <source
                     src="assets/video/boya mic project.mp4"
                     type="video/mp4"
@@ -817,7 +865,13 @@
                 data-video="assets/video/protein shake project.mp4"
                 aria-label="Play Protein Shake product video"
               >
-                <video muted loop playsinline preload="none">
+                <video
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="assets/images/Quest Protein Drink Review Thumbnail.png"
+                >
                   <source
                     src="assets/video/protein shake project.mp4"
                     type="video/mp4"
@@ -980,7 +1034,13 @@
                 data-video="assets/video/sku-compound.mp4"
                 aria-label="Play SKU Compound product video"
               >
-                <video muted loop playsinline preload="none">
+                <video
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="assets/images/Wait… Beverly Hills_.png"
+                >
                   <source
                     src="assets/video/sku-compound.mp4"
                     type="video/mp4"
@@ -1047,7 +1107,13 @@
                 data-video="assets/video/short-form-1.mp4"
                 aria-label="Play short-form social edit"
               >
-                <video muted loop playsinline preload="none">
+                <video
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="assets/images/short-form-1-thumbnail.png"
+                >
                   <source
                     src="assets/video/short-form-1.mp4"
                     type="video/mp4"
@@ -1167,7 +1233,8 @@
           );
           button.addEventListener("mouseleave", () => {
             preview.pause();
-            preview.currentTime = 0;
+            if (preview.poster) preview.load();
+            else preview.currentTime = 0;
           });
         });
       function closeViewer() {
