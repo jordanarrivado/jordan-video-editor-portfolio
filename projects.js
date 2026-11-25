@@ -76,47 +76,11 @@ window.PORTFOLIO = {
       "poster": "quest.webp"
     },
     {
-      "id": "collagen",
-      "cat": "featured",
-      "title": "Deep Collagen",
-      "type": "Skincare",
-      "src": "Deep Collagen.mp4"
-    },
-    {
-      "id": "german",
-      "cat": "featured",
-      "title": "German Talking Head",
-      "type": "Talking head",
-      "src": "German-talking-head.mp4",
-      "lang": "DE"
-    },
-    {
       "id": "sleeps",
       "cat": "product",
       "title": "SleepS Before & After",
       "type": "Performance ad",
       "src": "Before and After SleepS 54.mp4"
-    },
-    {
-      "id": "latte",
-      "cat": "product",
-      "title": "Spanish Latte",
-      "type": "Food & beverage UGC",
-      "src": "Spanish latte Coffee.mp4"
-    },
-    {
-      "id": "niacin",
-      "cat": "product",
-      "title": "Niacinamide",
-      "type": "Skincare UGC",
-      "src": "Niacinamide.mp4"
-    },
-    {
-      "id": "earpods",
-      "cat": "product",
-      "title": "Earpods",
-      "type": "Gadget UGC",
-      "src": "Earpods.mp4"
     },
     {
       "id": "sku",
@@ -169,14 +133,6 @@ window.PORTFOLIO = {
       "type": "Podcast clip",
       "src": "short-form-1.mp4",
       "poster": "views-100m.webp"
-    },
-    {
-      "id": "burger",
-      "cat": "commercial",
-      "title": "Burger",
-      "type": "Food commercial · 16:9",
-      "src": "burger-final.mp4",
-      "wide": true
     }
   ]
 };
