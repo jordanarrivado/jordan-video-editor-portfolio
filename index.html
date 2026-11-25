@@ -2221,7 +2221,7 @@
       <section class="shell section" style="padding-top: 40px" aria-label="At a glance">
         <div class="stats reveal">
           <div class="stat">
-            <span class="stat-num"><span data-count="20">0</span><em>+</em></span>
+            <span class="stat-num"><span data-count="20" id="statCount">0</span><em>+</em></span>
             <p>Edits on this page &mdash; every one watchable</p>
           </div>
           <div class="stat">
@@ -2526,48 +2526,28 @@
       </div>
     </dialog>
 
+    <script src="projects.js"></script>
     <script>
-      /* =========================================================
-         PROJECTS — add, remove or reorder videos here.
-         cat: featured | product | short | commercial
-         ========================================================= */
+      /* Data comes from projects.js — edit it with manager.html. */
       const V = "assets/video/";
       const P = "assets/images/web/";
-      const PROJECTS = [
-        { id: "rental", cat: "featured", title: "Rental Transformation", type: "Real-estate reel", src: "Anthony Mitchell Elite HerTax Reel 49 Find Your Rental.mp4" },
-        { id: "mktg", cat: "featured", title: "Marketing & Sales", type: "Motion graphics", src: "CLIP 2.mp4" },
-        { id: "areo-en", cat: "featured", title: "Areo — English", type: "Short-form ad", src: "Areo-English.mp4", poster: "areo.webp", lang: "EN" },
-        { id: "areo-es", cat: "featured", title: "Areo — Spanish", type: "Short-form ad", src: "Areo-Spanish.mp4", poster: "areo.webp", lang: "ES" },
-        { id: "boya", cat: "featured", title: "Boya Mic", type: "Tech product review", src: "boya mic project.mp4", poster: "boya.webp" },
-        { id: "protein", cat: "featured", title: "Protein Shake", type: "Food & beverage", src: "protein shake project.mp4", poster: "quest.webp" },
-        { id: "collagen", cat: "featured", title: "Deep Collagen", type: "Skincare", src: "Deep Collagen.mp4" },
-        { id: "german", cat: "featured", title: "German Talking Head", type: "Talking head", src: "German-talking-head.mp4", lang: "DE" },
-
-        { id: "sleeps", cat: "product", title: "SleepS Before & After", type: "Performance ad", src: "Before and After SleepS 54.mp4" },
-        { id: "latte", cat: "product", title: "Spanish Latte", type: "Food & beverage UGC", src: "Spanish latte Coffee.mp4" },
-        { id: "niacin", cat: "product", title: "Niacinamide", type: "Skincare UGC", src: "Niacinamide.mp4" },
-        { id: "earpods", cat: "product", title: "Earpods", type: "Gadget UGC", src: "Earpods.mp4" },
-        { id: "sku", cat: "product", title: "SKU Compound", type: "Street-interview ad", src: "sku-compound.mp4", poster: "beverly-hills.webp" },
-
-        { id: "ego", cat: "short", title: "Ego Fat Loss", type: "Health & fitness reel", src: "Ego_Fat_Loss_Reel_v2.mp4" },
-        { id: "french", cat: "short", title: "French Social Ad", type: "French-language edit", src: "French-V2.mp4", lang: "FR" },
-        { id: "hotel", cat: "short", title: "Lake Como Hotels", type: "Travel reel", src: "Hotel.mp4" },
-        { id: "founder", cat: "short", title: "Founder Story", type: "Talking head", src: "Talking_Head_1.mp4" },
-        { id: "creator", cat: "short", title: "Creator Cut", type: "Talking head", src: "Talking-head-2.mp4" },
-        { id: "social", cat: "short", title: "100M Views Cut", type: "Podcast clip", src: "short-form-1.mp4", poster: "views-100m.webp" },
-
-        { id: "burger", cat: "commercial", title: "Burger", type: "Food commercial · 16:9", src: "burger-final.mp4", wide: true },
-      ];
-      const EXTRA = {
-        intro: { id: "intro", title: "Meet Jordan", type: "Self-introduction", src: "self-introduction.mp4", poster: "jordan-intro.webp" },
-      };
-      const CATS = [
-        ["all", "All work"],
-        ["featured", "Featured"],
-        ["product", "Product / UGC"],
-        ["short", "Short-form"],
-        ["commercial", "Commercial"],
-      ];
+      let DATA = window.PORTFOLIO || { categories: [], projects: [] };
+      /* ?preview=draft shows unpublished changes from manager.html (this browser only) */
+      if (new URLSearchParams(location.search).get("preview") === "draft") {
+        try {
+          const draft = JSON.parse(localStorage.getItem("portfolio-draft-v1") || "null");
+          if (draft && Array.isArray(draft.projects)) {
+            DATA = draft;
+            document.title = "[Draft preview] " + document.title;
+          }
+        } catch (e) {}
+      }
+      DATA.categories = DATA.categories || [];
+      const PROJECTS = DATA.projects.filter((p) => !p.hidden && p.src);
+      const EXTRA = { intro: Object.assign({ id: "intro", title: "Meet Jordan", type: "Self-introduction", src: "self-introduction.mp4", poster: "jordan-intro.webp" }, DATA.intro) };
+      const CATS = [["all", "All work"]].concat(
+        DATA.categories.filter((c) => PROJECTS.some((p) => p.cat === c.id)).map((c) => [c.id, c.label])
+      );
 
       const $ = (s, c = document) => c.querySelector(s);
       const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -2619,6 +2599,8 @@
         const chunk = "<span>" + words.map((w) => esc(w) + "<b>✦</b>").join("") + "</span>";
         t.innerHTML = chunk.repeat(4);
       });
+
+      $("#statCount").dataset.count = PROJECTS.length;
 
       /* ---------- build grid ---------- */
       const grid = $("#grid");
@@ -2759,10 +2741,14 @@
         const l = visibleList();
         open(l.find((p) => p.id === card.dataset.id), l);
       });
+      $$("[data-play]").forEach((b) => {
+        if (!PROJECTS.some((p) => p.id === b.dataset.play)) b.hidden = true;
+      });
       $$("[data-play]").forEach((b) =>
         b.addEventListener("click", () => {
-          const langs = ["areo-en", "areo-es", "french", "german"].map((id) => PROJECTS.find((p) => p.id === id));
-          open(PROJECTS.find((p) => p.id === b.dataset.play), langs);
+          const langs = $$("[data-play]").map((x) => PROJECTS.find((p) => p.id === x.dataset.play)).filter(Boolean);
+          const pick = PROJECTS.find((p) => p.id === b.dataset.play);
+          if (pick) open(pick, langs);
         })
       );
       $$("[data-open=intro]").forEach((b) => b.addEventListener("click", () => open(EXTRA.intro)));

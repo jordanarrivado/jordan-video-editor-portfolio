@@ -9,15 +9,21 @@ Open `index.html` in a modern web browser. No build step or package installation
 ## Project structure
 
 - `index.html` — portfolio page, styles, and interactions
+- `projects.js` — the list of videos shown on the site
+- `manager.html` — visual editor for `projects.js`
 - `assets/images/` — original image assets
 - `assets/images/web/` — compressed WebP versions used by the page (~95% smaller)
 
-## Adding or reordering videos
+## Portfolio Manager (adding, editing or reordering videos)
 
-All reel videos come from the `PROJECTS` list near the top of the `<script>` in `index.html`.
-Add one line per video (`cat`: `featured`, `product`, `short` or `commercial`; optional `poster`, `lang`, `wide`).
-Filters, clip numbers, counts and the lightbox update on their own.
-- `assets/video/` — portfolio reels and introduction video
+All reel videos live in `projects.js`. Edit them visually with **`manager.html`**
+(open `your-site/manager.html`, it isn't linked from the portfolio):
+
+1. Add videos (or click one under **Unused videos**), edit titles, categories, language badges and thumbnails, drag to reorder, or hide a video without deleting it.
+2. Changes save automatically in your browser. Use **Preview site** to see them before anyone else does.
+3. Press **Publish…**, download `projects.js`, and upload or paste it over `projects.js` on GitHub. New video files go in `assets/video/`, thumbnails in `assets/images/web/`.
+
+The manager can't change the live site by itself, so it's safe for it to be public: only a GitHub commit publishes anything.
 
 ## Git LFS
 

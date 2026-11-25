@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="color-scheme" content="dark" />
+    <title>Portfolio Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --bg-2: #121212;
+        --bg-3: #1a1a1a;
+        --ink: #f4f1ea;
+        --muted: #8d8a83;
+        --line: #262626;
+        --volt: #e8ff3a;
+        --rec: #ff3b30;
+        --ok: #26d07c;
+        --warn: #ffb020;
+        --radius: 12px;
+        --display: "Anton", "Impact", sans-serif;
+        --sans: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: var(--volt);
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--volt);
+        outline-offset: 2px;
+      }
+
+      .mono {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      /* ---------- top bar ---------- */
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 12px 20px;
+        background: rgba(10, 10, 10, 0.88);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--volt);
+        color: #000;
+        font-family: var(--display);
+      }
+
+      .brand small {
+        display: block;
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 0.72rem;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .save-state {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+      }
+
+      .save-state i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ok);
+      }
+
+      .save-state.dirty i {
+        background: var(--warn);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 99px;
+        border: 1px solid #333;
+        background: var(--bg-2);
+        font-weight: 600;
+        font-size: 0.86rem;
+        white-space: nowrap;
+        text-decoration: none;
+        color: var(--ink);
+      }
+
+      .btn:hover {
+        border-color: var(--ink);
+      }
+
+      .btn-volt {
+        background: var(--volt);
+        border-color: var(--volt);
+        color: #000;
+      }
+
+      .btn-volt:hover {
+        background: #fff;
+        border-color: #fff;
+      }
+
+      .btn-danger {
+        color: #ff8a82;
+        border-color: #4a2220;
+      }
+
+      .btn-danger:hover {
+        background: var(--rec);
+        border-color: var(--rec);
+        color: #fff;
+      }
+
+      .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+      }
+
+      /* ---------- layout ---------- */
+      .wrap {
+        display: grid;
+        grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+        gap: 20px;
+        padding: 20px;
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--bg-2);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-head h2 {
+        margin: 0;
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+      }
+
+      .panel-body {
+        padding: 16px;
+      }
+
+      .banner {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        border: 1px solid #4a3d12;
+        border-radius: var(--radius);
+        background: #1d180a;
+        color: #f2dc9a;
+      }
+
+      .issues {
+        grid-column: 1 / -1;
+        padding: 12px 16px;
+        border: 1px solid #4a2220;
+        border-radius: var(--radius);
+        background: #1c0e0d;
+        color: #ffb3ad;
+      }
+
+      .issues ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+      }
+
+      /* ---------- list ---------- */
+      .list-tools {
+        display: flex;
+        gap: 8px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .list-tools input,
+      .list-tools select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .list {
+        list-style: none;
+        margin: 0;
+        padding: 8px;
+        max-height: calc(100vh - 230px);
+        overflow: auto;
+      }
+
+      .item {
+        display: grid;
+        grid-template-columns: 18px 40px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .item:hover {
+        background: var(--bg-3);
+      }
+
+      .item.sel {
+        border-color: var(--volt);
+        background: #1b1d10;
+      }
+
+      .item.is-hidden .item-title,
+      .item.is-hidden .thumb {
+        opacity: 0.4;
+      }
+
+      .item.drag-over {
+        box-shadow: inset 0 2px 0 var(--volt);
+      }
+
+      .item.dragging {
+        opacity: 0.4;
+      }
+
+      .grip {
+        color: #555;
+        cursor: grab;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .thumb {
+        width: 40px;
+        height: 56px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+      }
+
+      .thumb img,
+      .thumb video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .item-title {
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .item-meta {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 3px;
+      }
+
+      .pill {
+        padding: 2px 7px;
+        border-radius: 6px;
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        color: #cfccc4;
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        text-transform: uppercase;
+      }
+
+      .pill.lang {
+        background: var(--ink);
+        color: #000;
+        border-color: var(--ink);
+      }
+
+      .pill.off {
+        color: var(--warn);
+        border-color: #4a3d12;
+      }
+
+      .pill.bad {
+        color: #ff8a82;
+        border-color: #4a2220;
+      }
+
+      .moves {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .moves button {
+        width: 26px;
+        height: 22px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--muted);
+        font-size: 0.7rem;
+        line-height: 1;
+      }
+
+      .moves button:hover {
+        color: var(--ink);
+        border-color: #555;
+      }
+
+      .count {
+        color: var(--muted);
+      }
+
+      /* ---------- editor ---------- */
+      .editor {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 260px;
+        gap: 20px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+
+      .field label,
+      .field .lbl {
+        font-weight: 600;
+        font-size: 0.84rem;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      input[type="text"],
+      input[type="search"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #333;
+        border-radius: 10px;
+        background: var(--bg);
+        outline: none;
+      }
+
+      input[type="text"]:focus,
+      input[type="search"]:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--volt);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .checks {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin: 4px 0 16px;
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .check input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--volt);
+      }
+
+      .preview {
+        position: sticky;
+        top: 84px;
+        align-self: start;
+      }
+
+      .preview-box {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: var(--bg-3);
+      }
+
+      .preview-box.wide {
+        aspect-ratio: 16 / 9;
+      }
+
+      .preview-box video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        background: #000;
+      }
+
+      .preview-box .ov {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        pointer-events: none;
+        text-shadow: 0 1px 8px #000;
+      }
+
+      .preview-box .ov b {
+        display: block;
+      }
+
+      .preview-status {
+        margin-top: 8px;
+        color: var(--muted);
+      }
+
+      .preview-status.bad {
+        color: #ff8a82;
+      }
+
+      .editor-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .empty-state {
+        padding: 40px 16px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .chip {
+        padding: 6px 10px;
+        border: 1px dashed #444;
+        border-radius: 99px;
+        background: none;
+        font-size: 0.78rem;
+        color: #cfccc4;
+      }
+
+      .chip:hover {
+        border-color: var(--volt);
+        color: var(--volt);
+      }
+
+      .stack {
+        display: grid;
+        gap: 20px;
+        align-content: start;
+      }
+
+      .cat-row {
+        display: grid;
+        grid-template-columns: 120px minmax(0, 1fr) auto auto;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .cat-row code {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ---------- publish dialog ---------- */
+      dialog {
+        width: min(92vw, 760px);
+        max-height: 90vh;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--bg-2);
+        color: var(--ink);
+      }
+
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+      }
+
+      dialog .panel-body {
+        overflow: auto;
+        max-height: calc(90vh - 64px);
+      }
+
+      ol.steps {
+        margin: 0 0 16px;
+        padding-left: 20px;
+      }
+
+      ol.steps li {
+        margin-bottom: 10px;
+      }
+
+      textarea.code {
+        min-height: 220px;
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        white-space: pre;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 20px;
+        z-index: 50;
+        padding: 10px 16px;
+        border-radius: 99px;
+        background: var(--ink);
+        color: #000;
+        font-weight: 600;
+        transform: translate(-50%, 80px);
+        transition: transform 0.3s;
+      }
+
+      .toast.show {
+        transform: translate(-50%, 0);
+      }
+
+      @media (max-width: 1000px) {
+        .wrap {
+          grid-template-columns: 1fr;
+          padding: 12px;
+        }
+
+        .list {
+          max-height: 50vh;
+        }
+
+        .editor {
+          grid-template-columns: 1fr;
+        }
+
+        .preview {
+          position: static;
+          max-width: 240px;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .top {
+          padding: 10px 12px;
+        }
+
+        .row {
+          grid-template-columns: 1fr;
+        }
+
+        .cat-row {
+          grid-template-columns: 1fr auto auto;
+        }
+
+        .cat-row code {
+          grid-column: 1 / -1;
+        }
+
+        .save-state span {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <span class="brand-mark">JA</span>
+        <span>Portfolio Manager<small>Edits projects.js — your live site is untouched until you publish</small></span>
+      </div>
+      <div class="top-actions">
+        <span class="save-state mono" id="saveState"><i></i><span>Saved</span></span>
+        <button class="btn" type="button" id="undoBtn" disabled>Undo</button>
+        <a class="btn" href="index.html?preview=draft" target="_blank" rel="noopener">Preview site ↗</a>
+        <button class="btn btn-volt" type="button" id="publishBtn">Publish…</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="banner" id="draftBanner" hidden>
+        <span>You have unpublished changes saved in this browser. They're only on this device until you publish.</span>
+        <button class="btn btn-sm" type="button" id="discardBtn">Discard changes</button>
+      </div>
+      <div class="issues" id="issues" hidden></div>
+
+      <!-- ===== left: project list ===== -->
+      <section class="panel" aria-labelledby="listTitle">
+        <div class="panel-head">
+          <h2 id="listTitle">Videos <span class="count mono" id="count"></span></h2>
+          <button class="btn btn-volt btn-sm" type="button" id="addBtn">+ Add video</button>
+        </div>
+        <div class="list-tools">
+          <input type="search" id="search" placeholder="Search title or file…" aria-label="Search videos" />
+          <select id="catFilter" aria-label="Filter by category"></select>
+        </div>
+        <ul class="list" id="list" aria-label="Videos in display order. Drag or use the arrows to reorder."></ul>
+      </section>
+
+      <!-- ===== right: editor + settings ===== -->
+      <div class="stack">
+        <section class="panel" aria-labelledby="editTitle">
+          <div class="panel-head">
+            <h2 id="editTitle">Edit video</h2>
+            <span class="mono count" id="editPos"></span>
+          </div>
+          <div class="panel-body">
+            <div class="empty-state" id="noSel">Pick a video on the left, or add a new one.</div>
+            <form id="form" class="editor" hidden autocomplete="off">
+              <div>
+                <div class="field">
+                  <label for="f-title">Title</label>
+                  <input type="text" id="f-title" name="title" required placeholder="e.g. Boya Mic" />
+                </div>
+                <div class="field">
+                  <label for="f-type">Subtitle / type</label>
+                  <input type="text" id="f-type" name="type" placeholder="e.g. Tech product review" />
+                </div>
+                <div class="row">
+                  <div class="field">
+                    <label for="f-cat">Category</label>
+                    <select id="f-cat" name="cat"></select>
+                  </div>
+                  <div class="field">
+                    <label for="f-lang">Language badge</label>
+                    <input type="text" id="f-lang" name="lang" list="langs" maxlength="4" placeholder="none" />
+                    <datalist id="langs"><option value="EN"></option><option value="ES"></option><option value="FR"></option><option value="DE"></option><option value="TL"></option></datalist>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="f-src">Video file</label>
+                  <input type="text" id="f-src" name="src" list="videoFiles" required placeholder="my-video.mp4" />
+                  <datalist id="videoFiles"></datalist>
+                  <span class="hint">File name inside <code>assets/video/</code>. New files must be uploaded there too.</span>
+                </div>
+                <div class="field">
+                  <label for="f-poster">Thumbnail (optional)</label>
+                  <input type="text" id="f-poster" name="poster" list="posterFiles" placeholder="none — first frame is used" />
+                  <datalist id="posterFiles"></datalist>
+                  <span class="hint">File name inside <code>assets/images/web/</code>.</span>
+                </div>
+                <div class="checks">
+                  <label class="check"><input type="checkbox" id="f-wide" name="wide" /> Landscape 16:9 (wide card)</label>
+                  <label class="check"><input type="checkbox" id="f-hidden" name="hidden" /> Hide from site</label>
+                </div>
+                <div class="field">
+                  <label for="f-id">ID</label>
+                  <input type="text" id="f-id" name="id" pattern="[a-z0-9-]+" placeholder="auto" />
+                  <span class="hint">Lowercase letters, numbers and dashes. The language buttons use <code>areo-en</code>, <code>areo-es</code>, <code>french</code>, <code>german</code>.</span>
+                </div>
+                <div class="editor-actions">
+                  <button class="btn btn-sm" type="button" id="dupBtn">Duplicate</button>
+                  <button class="btn btn-sm" type="button" id="topBtn">Move to top</button>
+                  <button class="btn btn-sm btn-danger" type="button" id="delBtn">Delete</button>
+                </div>
+              </div>
+              <div class="preview">
+                <div class="preview-box" id="pvBox">
+                  <video id="pv" muted loop playsinline controls preload="metadata"></video>
+                  <div class="ov"><b id="pvTitle"></b><span class="hint" id="pvType"></span></div>
+                </div>
+                <div class="preview-status mono" id="pvStatus"></div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="unusedTitle">
+          <div class="panel-head">
+            <h2 id="unusedTitle">Unused videos</h2>
+            <span class="hint">Click to add</span>
+          </div>
+          <div class="panel-body">
+            <div class="chips" id="unused"></div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="catTitle">
+          <div class="panel-head">
+            <h2 id="catTitle">Categories</h2>
+            <button class="btn btn-sm" type="button" id="addCatBtn">+ Add category</button>
+          </div>
+          <div class="panel-body" id="cats"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="introTitle">
+          <div class="panel-head"><h2 id="introTitle">Intro video</h2></div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="field">
+                <label for="i-src">Video file</label>
+                <input type="text" id="i-src" list="videoFiles" />
+              </div>
+              <div class="field">
+                <label for="i-poster">Thumbnail</label>
+                <input type="text" id="i-poster" list="posterFiles" />
+              </div>
+            </div>
+            <span class="hint">Plays from the "Meet your editor" button in the hero.</span>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <dialog id="publish" aria-labelledby="pubTitle">
+      <div class="panel-head">
+        <h2 id="pubTitle">Publish changes</h2>
+        <button class="btn btn-sm" type="button" id="pubClose">Close</button>
+      </div>
+      <div class="panel-body">
+        <ol class="steps">
+          <li>
+            <button class="btn btn-volt btn-sm" type="button" id="dlBtn">Download projects.js</button>
+            &nbsp;or&nbsp;
+            <button class="btn btn-sm" type="button" id="copyBtn">Copy code</button>
+          </li>
+          <li>
+            On GitHub, open
+            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/edit/main/projects.js" target="_blank" rel="noopener">projects.js → Edit</a>,
+            select all, paste, then <b>Commit changes</b>. Or use
+            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main" target="_blank" rel="noopener">Add file → Upload</a>
+            and drop the downloaded file.
+          </li>
+          <li>
+            Uploading new videos or thumbnails? Upload them into
+            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main/assets/video" target="_blank" rel="noopener">assets/video</a>
+            or
+            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main/assets/images/web" target="_blank" rel="noopener">assets/images/web</a>
+            first.
+          </li>
+          <li>Wait a minute or two for the live site to update, then come back and press <b>Mark as published</b>.</li>
+        </ol>
+        <textarea class="code" id="code" readonly aria-label="projects.js code"></textarea>
+        <div class="editor-actions" style="margin-top: 14px">
+          <button class="btn btn-sm" type="button" id="markBtn">Mark as published</button>
+          <label class="btn btn-sm" style="cursor: pointer">
+            Import a projects.js…
+            <input type="file" id="importFile" accept=".js,.json,text/javascript,application/json" hidden />
+          </label>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="projects.js"></script>
+    <script>
+      const KEY = "portfolio-draft-v1";
+      const V = "assets/video/";
+      const P = "assets/images/web/";
+      /* Every file currently in the repo; anything typed in also works. */
+      const KNOWN_VIDEOS = [
+        "ANIMATION OFFICIAL.mp4", "Anthony Mitchell Elite HerTax Reel 49 Find Your Rental.mp4", "Areo-English.mp4",
+        "Areo-Spanish.mp4", "Before and After SleepS 54.mp4", "CLIP 2.mp4", "Deep Collagen.mp4", "Earpods.mp4",
+        "Ego_Fat_Loss_Reel_v2.mp4", "French-V2.mp4", "German-talking-head.mp4", "Hotel.mp4",
+        "JordanArrivado_Ego_Fat_Loss_under_30MB.mp4", "Niacinamide.mp4", "Phone-HolderUGC.mp4", "REVELA_TRIAL.mp4",
+        "Spanish latte Coffee.mp4", "Talking-head-2.mp4", "Talking_Head_1.mp4", "TheMotherWhoNeverForgot.mp4",
+        "boya mic project.mp4", "burger-final.mp4", "final.mp4", "protein shake project.mp4",
+        "self-introduction.mp4", "self-introduction2.mp4", "short-form-1.mp4", "sku-compound.mp4",
+      ];
+      const KNOWN_POSTERS = ["areo.webp", "beverly-hills.webp", "boya.webp", "jordan-intro.webp", "quest.webp", "views-100m.webp"];
+
+      const $ = (s, c = document) => c.querySelector(s);
+      const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+      const clone = (o) => JSON.parse(JSON.stringify(o));
+      const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      const slug = (t) => String(t).toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-").replace(/-+/g, "-").slice(0, 40) || "video";
+
+      const published = clone(window.PORTFOLIO || { version: 1, categories: [], intro: {}, projects: [] });
+      let data, selId = null, history = [];
+
+      function load() {
+        let draft = null;
+        try { draft = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+        data = draft && Array.isArray(draft.projects) ? draft : clone(published);
+        data.intro = data.intro || {};
+      }
+
+      const serialize = (d) =>
+        "/* Portfolio data — edit with manager.html (recommended) or by hand.\n" +
+        "   Videos live in assets/video/, posters in assets/images/web/. */\n" +
+        "window.PORTFOLIO = " + JSON.stringify(clean(d), null, 2) + ";\n";
+
+      function clean(d) {
+        const out = clone(d);
+        out.projects = out.projects.map((p) => {
+          const q = {};
+          ["id", "cat", "title", "type", "src", "poster", "lang", "wide", "hidden"].forEach((k) => {
+            if (p[k] !== undefined && p[k] !== "" && p[k] !== false) q[k] = p[k];
+          });
+          return q;
+        });
+        return out;
+      }
+
+      const isDirty = () => serialize(data) !== serialize(published);
+
+      function commit(snapshot = true) {
+        try {
+          if (isDirty()) localStorage.setItem(KEY, JSON.stringify(data));
+          else localStorage.removeItem(KEY);
+        } catch (e) {}
+        renderStatus();
+      }
+
+      function remember() {
+        history.push(JSON.stringify(data));
+        if (history.length > 50) history.shift();
+        $("#undoBtn").disabled = false;
+      }
+
+      function toast(msg) {
+        const t = $("#toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(t._h);
+        t._h = setTimeout(() => t.classList.remove("show"), 2000);
+      }
+
+      function uniqueId(base, except) {
+        let id = slug(base), n = 2;
+        while (data.projects.some((p) => p.id === id && p !== except)) id = slug(base) + "-" + n++;
+        return id;
+      }
+
+      /* ---------- validation ---------- */
+      function problems() {
+        const out = [], seen = {};
+        const cats = new Set(data.categories.map((c) => c.id));
+        data.projects.forEach((p, i) => {
+          const name = p.title || "Video #" + (i + 1);
+          if (!p.title) out.push(name + ": missing title");
+          if (!p.src) out.push(name + ": missing video file");
+          if (!cats.has(p.cat)) out.push(name + ": category “" + (p.cat || "none") + "” doesn't exist");
+          if (seen[p.id]) out.push(name + ": ID “" + p.id + "” is used twice");
+          seen[p.id] = 1;
+        });
+        return out;
+      }
+
+      /* ---------- render ---------- */
+      function renderStatus() {
+        const dirty = isDirty();
+        $("#saveState").classList.toggle("dirty", dirty);
+        $("#saveState span").textContent = dirty ? "Unpublished changes" : "Matches live site";
+        $("#draftBanner").hidden = !dirty;
+        const pr = problems();
+        $("#issues").hidden = !pr.length;
+        $("#issues").innerHTML = "<b>Fix before publishing:</b><ul>" + pr.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+      }
+
+      function catLabel(id) {
+        const c = data.categories.find((c) => c.id === id);
+        return c ? c.label : id || "—";
+      }
+
+      function renderList() {
+        const q = $("#search").value.trim().toLowerCase();
+        const cf = $("#catFilter").value;
+        const filtering = q || cf;
+        const shown = data.projects.filter(
+          (p) => (!cf || p.cat === cf) && (!q || (p.title + " " + p.type + " " + p.src).toLowerCase().includes(q))
+        );
+        const vis = data.projects.filter((p) => !p.hidden).length;
+        $("#count").textContent = vis + " live" + (vis < data.projects.length ? " · " + (data.projects.length - vis) + " hidden" : "");
+        $("#list").innerHTML = shown.length
+          ? shown
+              .map((p) => {
+                const i = data.projects.indexOf(p);
+                const thumb = p.poster
+                  ? '<img src="' + P + encodeURI(p.poster) + '" alt="" loading="lazy">'
+                  : p.src ? '<video src="' + encodeURI(V + p.src) + '#t=0.5" muted preload="metadata"></video>' : "";
+                return (
+                  '<li class="item' + (p.id === selId ? " sel" : "") + (p.hidden ? " is-hidden" : "") + '" data-id="' + esc(p.id) + '"' +
+                  (filtering ? "" : ' draggable="true"') + '>' +
+                  '<span class="grip" aria-hidden="true">' + (filtering ? "" : "⋮⋮") + "</span>" +
+                  '<span class="thumb">' + thumb + "</span>" +
+                  '<span style="min-width:0"><span class="item-title">' + esc(p.title || "Untitled") + "</span>" +
+                  '<span class="item-meta"><span class="pill">' + esc(catLabel(p.cat)) + "</span>" +
+                  (p.lang ? '<span class="pill lang">' + esc(p.lang) + "</span>" : "") +
+                  (p.wide ? '<span class="pill">16:9</span>' : "") +
+                  (p.hidden ? '<span class="pill off">Hidden</span>' : "") +
+                  (!p.src ? '<span class="pill bad">No file</span>' : "") +
+                  "</span></span>" +
+                  '<span class="moves"><button type="button" data-move="-1" aria-label="Move ' + esc(p.title) + ' up"' + (i === 0 ? " disabled" : "") + '>▲</button>' +
+                  '<button type="button" data-move="1" aria-label="Move ' + esc(p.title) + ' down"' + (i === data.projects.length - 1 ? " disabled" : "") + ">▼</button></span>" +
+                  "</li>"
+                );
+              })
+              .join("")
+          : '<li class="empty-state">No videos match.</li>';
+      }
+
+      function renderCats() {
+        const opts = data.categories.map((c) => '<option value="' + esc(c.id) + '">' + esc(c.label) + "</option>").join("");
+        const cf = $("#catFilter").value;
+        $("#catFilter").innerHTML = '<option value="">All categories</option>' + opts;
+        $("#catFilter").value = data.categories.some((c) => c.id === cf) ? cf : "";
+        $("#f-cat").innerHTML = opts;
+        $("#cats").innerHTML =
+          data.categories
+            .map((c, i) => {
+              const n = data.projects.filter((p) => p.cat === c.id).length;
+              return (
+                '<div class="cat-row" data-cat="' + esc(c.id) + '"><code>' + esc(c.id) + " · " + n + "</code>" +
+                '<input type="text" value="' + esc(c.label) + '" aria-label="Label for ' + esc(c.id) + '" data-cat-label>' +
+                '<span class="moves" style="flex-direction:row"><button type="button" data-cat-move="-1" aria-label="Move up"' + (i ? "" : " disabled") + '>▲</button>' +
+                '<button type="button" data-cat-move="1" aria-label="Move down"' + (i < data.categories.length - 1 ? "" : " disabled") + ">▼</button></span>" +
+                '<button class="btn btn-sm btn-danger" type="button" data-cat-del' + (n ? ' disabled title="Move its videos to another category first"' : "") + ">Delete</button></div>"
+              );
+            })
+            .join("") + '<p class="hint" style="margin:8px 0 0">Order here = order of the filter buttons. Empty categories are hidden on the site.</p>';
+      }
+
+      function renderFiles() {
+        const used = new Set(data.projects.map((p) => p.src).concat(data.intro.src || []));
+        const all = [...new Set(KNOWN_VIDEOS.concat(data.projects.map((p) => p.src).filter(Boolean)))].sort((a, b) => a.localeCompare(b));
+        $("#videoFiles").innerHTML = all.map((f) => '<option value="' + esc(f) + '"></option>').join("");
+        const posters = [...new Set(KNOWN_POSTERS.concat(data.projects.map((p) => p.poster).filter(Boolean)))].sort();
+        $("#posterFiles").innerHTML = posters.map((f) => '<option value="' + esc(f) + '"></option>').join("");
+        const unused = all.filter((f) => !used.has(f));
+        $("#unused").innerHTML = unused.length
+          ? unused.map((f) => '<button class="chip" type="button" data-add="' + esc(f) + '">+ ' + esc(f) + "</button>").join("")
+          : '<span class="hint">Every video file is on the site.</span>';
+      }
+
+      function renderEditor() {
+        const p = data.projects.find((p) => p.id === selId);
+        $("#form").hidden = !p;
+        $("#noSel").hidden = !!p;
+        if (!p) return ($("#editPos").textContent = "");
+        $("#editPos").textContent = "CLIP " + String(data.projects.filter((x) => !x.hidden).indexOf(p) + 1).padStart(2, "0") + " · #" + (data.projects.indexOf(p) + 1);
+        const f = $("#form");
+        f.title.value = p.title || "";
+        f.type.value = p.type || "";
+        f.cat.value = p.cat || "";
+        f.lang.value = p.lang || "";
+        f.src.value = p.src || "";
+        f.poster.value = p.poster || "";
+        f.wide.checked = !!p.wide;
+        f.hidden.checked = !!p.hidden;
+        f.id.value = p.id || "";
+        renderPreview(p);
+      }
+
+      function renderPreview(p) {
+        const pv = $("#pv"), st = $("#pvStatus");
+        $("#pvBox").classList.toggle("wide", !!p.wide);
+        $("#pvTitle").textContent = p.title || "";
+        $("#pvType").textContent = p.type || "";
+        const src = p.src ? encodeURI(V + p.src) : "";
+        const poster = p.poster ? P + encodeURI(p.poster) : "";
+        if (pv.getAttribute("data-src") !== src) {
+          pv.setAttribute("data-src", src);
+          st.textContent = src ? "Loading…" : "No video file set";
+          st.classList.toggle("bad", !src);
+          if (src) pv.src = src + "#t=0.5";
+          else pv.removeAttribute("src");
+        }
+        if (poster) pv.poster = poster;
+        else pv.removeAttribute("poster");
+      }
+
+      $("#pv").addEventListener("loadedmetadata", (e) => {
+        const v = e.target, st = $("#pvStatus");
+        st.classList.remove("bad");
+        st.textContent = "✓ Found · " + v.videoWidth + "×" + v.videoHeight + " · " + Math.round(v.duration) + "s";
+        const p = data.projects.find((p) => p.id === selId);
+        if (p && v.videoWidth > v.videoHeight && !p.wide) st.textContent += " · landscape — tick 16:9?";
+      });
+      $("#pv").addEventListener("error", () => {
+        const st = $("#pvStatus");
+        st.classList.add("bad");
+        st.textContent = "File not found here — upload it to assets/video/ (or check the name).";
+      });
+
+      function renderAll() {
+        renderCats();
+        renderList();
+        renderFiles();
+        renderEditor();
+        $("#i-src").value = data.intro.src || "";
+        $("#i-poster").value = data.intro.poster || "";
+        renderStatus();
+      }
+
+      /* ---------- actions ---------- */
+      function select(id) {
+        selId = id;
+        renderList();
+        renderEditor();
+      }
+
+      function addProject(src = "") {
+        remember();
+        const title = src ? src.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim() : "New video";
+        const cf = $("#catFilter").value;
+        const p = { id: uniqueId(title), cat: cf || (data.categories[0] || {}).id || "featured", title, type: "", src };
+        data.projects.unshift(p);
+        commit();
+        selId = p.id;
+        renderAll();
+        $("#form").title.focus();
+        $("#form").title.select();
+        toast("Added to the top of the reel");
+      }
+
+      function move(id, delta) {
+        const i = data.projects.findIndex((p) => p.id === id), j = i + delta;
+        if (i < 0 || j < 0 || j >= data.projects.length) return;
+        remember();
+        const [p] = data.projects.splice(i, 1);
+        data.projects.splice(j, 0, p);
+        commit();
+        renderList();
+        renderEditor();
+      }
+
+      $("#addBtn").addEventListener("click", () => addProject());
+      $("#unused").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-add]");
+        if (b) addProject(b.dataset.add);
+      });
+
+      $("#list").addEventListener("click", (e) => {
+        const li = e.target.closest(".item");
+        if (!li) return;
+        const mv = e.target.closest("[data-move]");
+        if (mv) return move(li.dataset.id, +mv.dataset.move);
+        select(li.dataset.id);
+      });
+
+      /* drag & drop reorder */
+      let dragId = null;
+      $("#list").addEventListener("dragstart", (e) => {
+        const li = e.target.closest(".item");
+        if (!li) return;
+        dragId = li.dataset.id;
+        li.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", dragId);
+      });
+      $("#list").addEventListener("dragover", (e) => {
+        const li = e.target.closest(".item");
+        if (!li || !dragId) return;
+        e.preventDefault();
+        $$(".drag-over").forEach((x) => x.classList.remove("drag-over"));
+        li.classList.add("drag-over");
+      });
+      $("#list").addEventListener("drop", (e) => {
+        const li = e.target.closest(".item");
+        if (!li || !dragId) return;
+        e.preventDefault();
+        const from = data.projects.findIndex((p) => p.id === dragId);
+        let to = data.projects.findIndex((p) => p.id === li.dataset.id);
+        if (from !== to) {
+          remember();
+          const [p] = data.projects.splice(from, 1);
+          data.projects.splice(to, 0, p);
+          commit();
+        }
+        renderList();
+        renderEditor();
+      });
+      $("#list").addEventListener("dragend", () => {
+        dragId = null;
+        $$(".dragging,.drag-over").forEach((x) => x.classList.remove("dragging", "drag-over"));
+      });
+
+      $("#search").addEventListener("input", renderList);
+      $("#catFilter").addEventListener("change", renderList);
+
+      /* editor fields */
+      let typingTimer = null;
+      $("#form").addEventListener("input", (e) => {
+        const p = data.projects.find((p) => p.id === selId);
+        if (!p) return;
+        if (!typingTimer) remember();
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => (typingTimer = null), 800);
+        const f = e.target;
+        if (f.name === "id") {
+          const id = slug(f.value);
+          if (!id || data.projects.some((x) => x !== p && x.id === id)) return f.setCustomValidity("This ID is already used");
+          f.setCustomValidity("");
+          p.id = selId = id;
+        } else if (f.type === "checkbox") p[f.name] = f.checked;
+        else if (f.name === "lang") p.lang = f.value.trim().toUpperCase();
+        else p[f.name] = f.name === "src" || f.name === "poster" ? f.value.trim() : f.value;
+        commit();
+        renderList();
+        renderPreview(p);
+        if (f.name === "src") renderFiles();
+      });
+      $("#form").addEventListener("submit", (e) => e.preventDefault());
+
+      $("#dupBtn").addEventListener("click", () => {
+        const i = data.projects.findIndex((p) => p.id === selId);
+        if (i < 0) return;
+        remember();
+        const p = clone(data.projects[i]);
+        p.id = uniqueId(p.id);
+        p.title += " (copy)";
+        data.projects.splice(i + 1, 0, p);
+        commit();
+        selId = p.id;
+        renderAll();
+      });
+      $("#topBtn").addEventListener("click", () => move(selId, -data.projects.findIndex((p) => p.id === selId)));
+      $("#delBtn").addEventListener("click", () => {
+        const i = data.projects.findIndex((p) => p.id === selId);
+        if (i < 0) return;
+        if (!confirm("Remove “" + data.projects[i].title + "” from the portfolio?\n\nThe video file stays in the repo — tip: “Hide from site” keeps it here for later.")) return;
+        remember();
+        data.projects.splice(i, 1);
+        commit();
+        selId = (data.projects[i] || data.projects[i - 1] || {}).id || null;
+        renderAll();
+        toast("Deleted · Undo is in the top bar");
+      });
+
+      /* categories */
+      $("#cats").addEventListener("input", (e) => {
+        if (!e.target.matches("[data-cat-label]")) return;
+        const c = data.categories.find((c) => c.id === e.target.closest(".cat-row").dataset.cat);
+        c.label = e.target.value;
+        commit();
+        renderList();
+        const opts = $$("#f-cat option, #catFilter option").filter((o) => o.value === c.id);
+        opts.forEach((o) => (o.textContent = c.label));
+      });
+      $("#cats").addEventListener("click", (e) => {
+        const row = e.target.closest(".cat-row");
+        if (!row) return;
+        const i = data.categories.findIndex((c) => c.id === row.dataset.cat);
+        const mv = e.target.closest("[data-cat-move]");
+        if (mv) {
+          const j = i + +mv.dataset.catMove;
+          remember();
+          [data.categories[i], data.categories[j]] = [data.categories[j], data.categories[i]];
+        } else if (e.target.closest("[data-cat-del]")) {
+          remember();
+          data.categories.splice(i, 1);
+        } else return;
+        commit();
+        renderAll();
+      });
+      $("#addCatBtn").addEventListener("click", () => {
+        const label = prompt("Category name (e.g. Podcast clips):");
+        if (!label || !label.trim()) return;
+        let id = slug(label), n = 2;
+        while (data.categories.some((c) => c.id === id)) id = slug(label) + "-" + n++;
+        remember();
+        data.categories.push({ id, label: label.trim() });
+        commit();
+        renderAll();
+      });
+
+      /* intro */
+      ["src", "poster"].forEach((k) =>
+        $("#i-" + k).addEventListener("input", (e) => {
+          data.intro[k] = e.target.value.trim();
+          commit();
+          renderFiles();
+        })
+      );
+
+      /* undo / discard */
+      $("#undoBtn").addEventListener("click", () => {
+        const prev = history.pop();
+        if (!prev) return;
+        data = JSON.parse(prev);
+        if (!data.projects.some((p) => p.id === selId)) selId = null;
+        $("#undoBtn").disabled = !history.length;
+        commit();
+        renderAll();
+      });
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.target.matches("input,textarea")) {
+          e.preventDefault();
+          $("#undoBtn").click();
+        }
+      });
+      $("#discardBtn").addEventListener("click", () => {
+        if (!confirm("Throw away all unpublished changes and go back to what's live?")) return;
+        remember();
+        data = clone(published);
+        data.intro = data.intro || {};
+        commit();
+        if (!data.projects.some((p) => p.id === selId)) selId = null;
+        renderAll();
+      });
+
+      /* publish */
+      const pub = $("#publish");
+      $("#publishBtn").addEventListener("click", () => {
+        const pr = problems();
+        if (pr.length && !confirm("There are " + pr.length + " problem(s) listed at the top. Publish anyway?")) return;
+        $("#code").value = serialize(data);
+        pub.showModal();
+      });
+      $("#pubClose").addEventListener("click", () => pub.close());
+      $("#dlBtn").addEventListener("click", () => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([serialize(data)], { type: "text/javascript" }));
+        a.download = "projects.js";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        toast("Downloaded projects.js");
+      });
+      $("#copyBtn").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(serialize(data));
+          toast("Copied — paste it into projects.js on GitHub");
+        } catch (e) {
+          $("#code").select();
+          toast("Select-all is ready — press Ctrl/⌘+C");
+        }
+      });
+      $("#markBtn").addEventListener("click", () => {
+        if (!confirm("Clear the saved draft on this device? Only do this once GitHub shows your new projects.js.")) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        location.reload();
+      });
+      $("#importFile").addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const json = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
+          if (!Array.isArray(json.projects)) throw new Error("no projects");
+          remember();
+          data = json;
+          data.categories = data.categories || [];
+          data.intro = data.intro || {};
+          selId = null;
+          commit();
+          renderAll();
+          pub.close();
+          toast("Imported " + data.projects.length + " videos");
+        } catch (err) {
+          alert("That file doesn't look like a projects.js from this site.");
+        }
+        e.target.value = "";
+      });
+
+      addEventListener("beforeunload", () => commit());
+
+      load();
+      selId = (data.projects[0] || {}).id || null;
+      renderAll();
+    </script>
+  </body>
+</html>
