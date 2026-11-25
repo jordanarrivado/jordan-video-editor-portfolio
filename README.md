@@ -11,6 +11,7 @@ Open `index.html` in a modern web browser. No build step or package installation
 - `index.html` — portfolio page, styles, and interactions
 - `projects.js` — the list of videos shown on the site
 - `manager.html` — visual editor for `projects.js`
+- `api/publish.js` — Vercel function behind the manager's one-click Publish
 - `assets/images/` — original image assets
 - `assets/images/web/` — compressed WebP versions used by the page (~95% smaller)
 
@@ -21,9 +22,21 @@ All reel videos live in `projects.js`. Edit them visually with **`manager.html`*
 
 1. Add videos (or click one under **Unused videos**), edit titles, categories, language badges and thumbnails, drag to reorder, or hide a video without deleting it.
 2. Changes save automatically in your browser. Use **Preview site** to see them before anyone else does.
-3. Press **Publish…**, download `projects.js`, and upload or paste it over `projects.js` on GitHub. New video files go in `assets/video/`, thumbnails in `assets/images/web/`.
+3. Press **Publish**. The manager commits `projects.js` to GitHub through `api/publish.js` (a Vercel function), Vercel redeploys, and the page tells you when it's live. Tick **Remember on this device** and later publishes are one click.
 
-The manager can't change the live site by itself, so it's safe for it to be public: only a GitHub commit publishes anything.
+New video files go in `assets/video/` and thumbnails in `assets/images/web/`, uploaded through GitHub.
+
+### One-time setup for one-click publish
+
+1. Create a [fine-grained GitHub token](https://github.com/settings/personal-access-tokens/new): only this repository, permission **Contents: Read and write**.
+2. In Vercel, go to the project → **Settings → Environment Variables** and add:
+   - `GITHUB_TOKEN`: the token
+   - `ADMIN_PASSWORD`: the password you'll type in the manager
+3. Redeploy the latest deployment.
+
+Without these, the manager falls back to **Manual publish**: download or copy `projects.js` and commit it on GitHub yourself.
+
+The publish endpoint only accepts the correct password, validates every field, and rebuilds `projects.js` itself, so it can't be used to write anything else to the repo. It also warns before overwriting a `projects.js` that was changed on GitHub after you opened the manager.
 
 ## Git LFS
 

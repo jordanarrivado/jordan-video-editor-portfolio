@@ -600,6 +600,148 @@
         max-height: calc(90vh - 64px);
       }
 
+      .oneclick {
+        padding: 18px;
+        margin-bottom: 18px;
+        border: 1px solid #3b4214;
+        border-radius: 14px;
+        background: radial-gradient(120% 140% at 0% 0%, rgba(232, 255, 58, 0.1), transparent 60%), var(--bg);
+      }
+
+      .oneclick h3 {
+        margin: 0 0 4px;
+        font-size: 1.05rem;
+      }
+
+      .pw-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .pw-row input {
+        flex: 1;
+        min-width: 180px;
+      }
+
+      .big {
+        padding: 12px 22px;
+        font-size: 0.95rem;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .progress-steps {
+        list-style: none;
+        margin: 14px 0 0;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .progress-steps li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+      }
+
+      .progress-steps li::before {
+        content: "";
+        flex: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid #333;
+      }
+
+      .progress-steps li.doing {
+        color: var(--ink);
+      }
+
+      .progress-steps li.doing::before {
+        border-color: var(--volt) transparent var(--volt) var(--volt);
+        animation: spin 0.8s linear infinite;
+      }
+
+      .progress-steps li.done {
+        color: var(--ink);
+      }
+
+      .progress-steps li.done::before {
+        border-color: var(--ok);
+        background: var(--ok);
+        box-shadow: inset 0 0 0 3px var(--bg);
+      }
+
+      .progress-steps li.fail {
+        color: #ff8a82;
+      }
+
+      .progress-steps li.fail::before {
+        border-color: var(--rec);
+        background: var(--rec);
+        box-shadow: inset 0 0 0 3px var(--bg);
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .msg {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+      }
+
+      .msg.bad {
+        background: #1c0e0d;
+        border: 1px solid #4a2220;
+        color: #ffb3ad;
+      }
+
+      .msg.good {
+        background: #0c1d14;
+        border: 1px solid #1d4a32;
+        color: #9be8bf;
+      }
+
+      .setup {
+        margin: 0;
+        padding-left: 20px;
+        color: #cfccc4;
+        font-size: 0.88rem;
+      }
+
+      .setup li {
+        margin-bottom: 6px;
+      }
+
+      .setup code,
+      .hint code {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--volt);
+      }
+
+      details.manual {
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+      }
+
+      details.manual summary {
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
       ol.steps {
         margin: 0 0 16px;
         padding-left: 20px;
@@ -687,7 +829,7 @@
         <span class="save-state mono" id="saveState"><i></i><span>Saved</span></span>
         <button class="btn" type="button" id="undoBtn" disabled>Undo</button>
         <a class="btn" href="index.html?preview=draft" target="_blank" rel="noopener">Preview site ↗</a>
-        <button class="btn btn-volt" type="button" id="publishBtn">Publish…</button>
+        <button class="btn btn-volt" type="button" id="publishBtn">Publish</button>
       </div>
     </header>
 
@@ -822,36 +964,77 @@
         <button class="btn btn-sm" type="button" id="pubClose">Close</button>
       </div>
       <div class="panel-body">
-        <ol class="steps">
-          <li>
-            <button class="btn btn-volt btn-sm" type="button" id="dlBtn">Download projects.js</button>
-            &nbsp;or&nbsp;
-            <button class="btn btn-sm" type="button" id="copyBtn">Copy code</button>
-          </li>
-          <li>
-            On GitHub, open
-            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/edit/main/projects.js" target="_blank" rel="noopener">projects.js → Edit</a>,
-            select all, paste, then <b>Commit changes</b>. Or use
-            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main" target="_blank" rel="noopener">Add file → Upload</a>
-            and drop the downloaded file.
-          </li>
-          <li>
-            Uploading new videos or thumbnails? Upload them into
-            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main/assets/video" target="_blank" rel="noopener">assets/video</a>
-            or
-            <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main/assets/images/web" target="_blank" rel="noopener">assets/images/web</a>
-            first.
-          </li>
-          <li>Wait a minute or two for the live site to update, then come back and press <b>Mark as published</b>.</li>
-        </ol>
-        <textarea class="code" id="code" readonly aria-label="projects.js code"></textarea>
-        <div class="editor-actions" style="margin-top: 14px">
-          <button class="btn btn-sm" type="button" id="markBtn">Mark as published</button>
-          <label class="btn btn-sm" style="cursor: pointer">
-            Import a projects.js…
-            <input type="file" id="importFile" accept=".js,.json,text/javascript,application/json" hidden />
-          </label>
-        </div>
+        <section class="oneclick" aria-labelledby="ocTitle">
+          <h3 id="ocTitle">⚡ One-click publish</h3>
+          <p class="hint" style="margin: 0">Commits your changes to GitHub. Vercel then updates the live site automatically (about a minute).</p>
+
+          <div id="ocReady" hidden>
+            <form class="pw-row" id="pwForm">
+              <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" aria-label="Admin password" required />
+              <button class="btn btn-volt big" type="submit" id="goBtn">Publish now</button>
+            </form>
+            <label class="check" style="margin-top: 10px; font-size: 0.85rem">
+              <input type="checkbox" id="rememberPw" /> Remember on this device (next time Publish is truly one click)
+            </label>
+            <button class="btn btn-sm" type="button" id="forgetPw" hidden style="margin-top: 10px">Forget saved password</button>
+          </div>
+
+          <ul class="progress-steps" id="ocSteps" hidden>
+            <li data-step="commit">Saving to GitHub</li>
+            <li data-step="deploy">Vercel is deploying</li>
+            <li data-step="live">Live on your site</li>
+          </ul>
+          <div class="msg" id="ocMsg" hidden></div>
+
+          <div id="ocSetup" hidden>
+            <p class="hint" style="margin: 12px 0 8px">One-time setup needed (about 3 minutes):</p>
+            <ol class="setup">
+              <li>
+                Create a GitHub token:
+                <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Fine-grained token</a>.
+                Repository access → <b>Only select repositories</b> → <code>jordan-video-editor-portfolio</code>.
+                Permissions → <b>Contents: Read and write</b>. Generate and copy it.
+              </li>
+              <li>
+                In Vercel: your project → <b>Settings → Environment Variables</b>, add
+                <code>GITHUB_TOKEN</code> (the token) and <code>ADMIN_PASSWORD</code> (a password you choose).
+              </li>
+              <li>Vercel → <b>Deployments</b> → ⋯ on the latest → <b>Redeploy</b>. Then reopen this page.</li>
+            </ol>
+            <p class="hint" id="ocWhy" style="margin: 10px 0 0"></p>
+          </div>
+        </section>
+
+        <details class="manual">
+          <summary>Manual publish (backup)</summary>
+          <ol class="steps">
+            <li>
+              <button class="btn btn-volt btn-sm" type="button" id="dlBtn">Download projects.js</button>
+              &nbsp;or&nbsp;
+              <button class="btn btn-sm" type="button" id="copyBtn">Copy code</button>
+            </li>
+            <li>
+              On GitHub, open
+              <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/edit/main/projects.js" target="_blank" rel="noopener">projects.js → Edit</a>,
+              select all, paste, then <b>Commit changes</b>.
+            </li>
+            <li>Wait a minute or two, then press <b>Mark as published</b>.</li>
+          </ol>
+          <textarea class="code" id="code" readonly aria-label="projects.js code"></textarea>
+          <div class="editor-actions" style="margin-top: 14px">
+            <button class="btn btn-sm" type="button" id="markBtn">Mark as published</button>
+            <label class="btn btn-sm" style="cursor: pointer">
+              Import a projects.js…
+              <input type="file" id="importFile" accept=".js,.json,text/javascript,application/json" hidden />
+            </label>
+          </div>
+        </details>
+
+        <p class="hint" style="margin: 16px 0 0">
+          New video or thumbnail files still go up through GitHub:
+          <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main/assets/video" target="_blank" rel="noopener">assets/video</a> ·
+          <a href="https://github.com/jordanarrivado/jordan-video-editor-portfolio/upload/main/assets/images/web" target="_blank" rel="noopener">assets/images/web</a>
+        </p>
       </div>
     </dialog>
 
@@ -880,7 +1063,7 @@
       const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
       const slug = (t) => String(t).toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-").replace(/-+/g, "-").slice(0, 40) || "video";
 
-      const published = clone(window.PORTFOLIO || { version: 1, categories: [], intro: {}, projects: [] });
+      let published = clone(window.PORTFOLIO || { version: 1, categories: [], intro: {}, projects: [] });
       let data, selId = null, history = [];
 
       function load() {
@@ -1307,13 +1490,160 @@
 
       /* publish */
       const pub = $("#publish");
-      $("#publishBtn").addEventListener("click", () => {
+      const PW_KEY = "portfolio-admin-pw";
+      let apiState = "unknown"; /* unknown | ready | unconfigured | missing */
+      let busy = false;
+      const savedPw = () => { try { return localStorage.getItem(PW_KEY) || ""; } catch (e) { return ""; } };
+
+      async function checkApi() {
+        if (location.protocol === "file:") return (apiState = "missing");
+        try {
+          const r = await fetch("api/publish", { cache: "no-store" });
+          const j = r.ok ? await r.json() : null;
+          apiState = j && typeof j.configured === "boolean" ? (j.configured ? "ready" : "unconfigured") : "missing";
+        } catch (e) {
+          apiState = "missing";
+        }
+        return apiState;
+      }
+
+      function renderPublish() {
+        $("#ocReady").hidden = apiState !== "ready" || busy;
+        $("#ocSetup").hidden = apiState === "ready";
+        $("#ocWhy").textContent =
+          apiState === "missing"
+            ? "(The publish service isn't reachable here — open this page from your Vercel site, after the latest version is deployed.)"
+            : "";
+        $("#forgetPw").hidden = !savedPw();
+        if (savedPw()) $("#rememberPw").checked = true;
+        if (savedPw() && !$("#pw").value) $("#pw").value = savedPw();
+      }
+
+      function stepState(name, state) {
+        const li = $('#ocSteps [data-step="' + name + '"]');
+        li.className = state || "";
+      }
+
+      function message(text, kind, html) {
+        const m = $("#ocMsg");
+        m.hidden = !text;
+        m.className = "msg " + (kind || "");
+        if (html) m.innerHTML = text;
+        else m.textContent = text;
+      }
+
+      async function waitForLive(content) {
+        const t0 = Date.now();
+        while (Date.now() - t0 < 4 * 60 * 1000) {
+          await new Promise((r) => setTimeout(r, 6000));
+          try {
+            const r = await fetch("projects.js?v=" + Date.now(), { cache: "no-store" });
+            if (r.ok && (await r.text()) === content) return true;
+          } catch (e) {}
+        }
+        return false;
+      }
+
+      async function publishNow(force) {
+        if (busy) return;
+        const password = $("#pw").value || savedPw();
+        if (!password) return $("#pw").focus();
+        const rememberChoice = $("#rememberPw").checked;
+        busy = true;
+        renderPublish();
+        message("");
+        $("#ocSteps").hidden = false;
+        ["commit", "deploy", "live"].forEach((n) => stepState(n, ""));
+        stepState("commit", "doing");
+        let res, j;
+        try {
+          res = await fetch("api/publish", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password, data: clean(data), base: clean(published), force: !!force }),
+          });
+          j = await res.json().catch(() => ({}));
+        } catch (e) {
+          j = { error: "Couldn't reach the publish service. Check your internet and try again." };
+        }
+        busy = false;
+        if (!res || !res.ok) {
+          stepState("commit", "fail");
+          if (res && res.status === 401) {
+            try { localStorage.removeItem(PW_KEY); } catch (e) {}
+            $("#pw").value = "";
+          }
+          if (res && res.status === 409 && j.conflict) {
+            message(esc(j.error) + ' <button class="btn btn-sm btn-danger" type="button" id="forceBtn" style="margin-left:6px">Publish anyway</button>', "bad", true);
+            $("#forceBtn").addEventListener("click", () => publishNow(true));
+          } else message(j.error || "Publishing failed (" + (res ? res.status : "network") + ").", "bad");
+          renderPublish();
+          if (res && res.status === 401) $("#pw").focus();
+          return;
+        }
+        try {
+          if (rememberChoice) localStorage.setItem(PW_KEY, password);
+          else localStorage.removeItem(PW_KEY);
+        } catch (e) {}
+        stepState("commit", "done");
+        published = clone(data);
+        history = [];
+        $("#undoBtn").disabled = true;
+        commit();
+        renderAll();
+        renderPublish();
+        if (j.unchanged) {
+          ["deploy", "live"].forEach((n) => stepState(n, "done"));
+          return message("Nothing new to publish — the live site already matches.", "good");
+        }
+        stepState("deploy", "doing");
+        message('Saved to GitHub' + (j.url ? ' (<a href="' + esc(j.url) + '" target="_blank" rel="noopener">commit</a>)' : "") + ". Waiting for Vercel…", "", true);
+        const live = await waitForLive(j.content);
+        if (live) {
+          stepState("deploy", "done");
+          stepState("live", "done");
+          message('🎉 Live! <a href="index.html" target="_blank" rel="noopener">Open your site ↗</a>', "good", true);
+          toast("Published — your site is updated");
+        } else {
+          stepState("deploy", "fail");
+          message("Saved to GitHub, but the site hasn't updated yet. Check Vercel → Deployments; it usually finishes in a minute or two.", "bad");
+        }
+      }
+
+      async function openPublish() {
         const pr = problems();
-        if (pr.length && !confirm("There are " + pr.length + " problem(s) listed at the top. Publish anyway?")) return;
+        if (pr.length) return alert("Fix these first:\n\n• " + pr.join("\n• "));
         $("#code").value = serialize(data);
-        pub.showModal();
+        if (!pub.open) pub.showModal();
+        if (!busy) {
+          $("#ocSteps").hidden = true;
+          message("");
+        }
+        if (apiState !== "ready") await checkApi();
+        renderPublish();
+        if (apiState !== "ready") return ($("details.manual").open = apiState === "missing");
+        if (!isDirty()) {
+          $("#ocSteps").hidden = true;
+          return message("No changes to publish — the live site already matches.", "good");
+        }
+        if (savedPw()) publishNow(); /* one click: password remembered */
+        else $("#pw").focus();
+      }
+
+      $("#publishBtn").addEventListener("click", openPublish);
+      $("#pwForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        publishNow();
+      });
+      $("#forgetPw").addEventListener("click", () => {
+        try { localStorage.removeItem(PW_KEY); } catch (e) {}
+        $("#pw").value = "";
+        $("#rememberPw").checked = false;
+        renderPublish();
+        toast("Password forgotten on this device");
       });
       $("#pubClose").addEventListener("click", () => pub.close());
+      checkApi();
       $("#dlBtn").addEventListener("click", () => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(new Blob([serialize(data)], { type: "text/javascript" }));
