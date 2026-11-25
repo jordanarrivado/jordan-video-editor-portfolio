@@ -328,6 +328,164 @@
         border: 1px solid var(--line);
       }
 
+      /* ---------- loading UI ---------- */
+      .skel {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .skel::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.09) 50%, transparent 80%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s linear infinite;
+        pointer-events: none;
+      }
+
+      .skel.loaded::after {
+        display: none;
+      }
+
+      .skel > img,
+      .skel > video {
+        opacity: 0;
+        transition: opacity 0.35s;
+      }
+
+      .skel.loaded > img,
+      .skel.loaded > video {
+        opacity: 1;
+      }
+
+      .thumb.failed {
+        display: grid;
+        place-items: center;
+        border-color: #4a2220;
+        color: #ff8a82;
+        font-weight: 700;
+      }
+
+      .thumb.failed::before {
+        content: "!";
+      }
+
+      .thumb.failed > * {
+        display: none;
+      }
+
+      @keyframes shimmer {
+        from {
+          background-position: 150% 0;
+        }
+        to {
+          background-position: -50% 0;
+        }
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        flex: none;
+        border-radius: 50%;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        animation: spin 0.7s linear infinite;
+      }
+
+      .pv-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: rgba(10, 10, 10, 0.55);
+        backdrop-filter: blur(2px);
+        color: var(--volt);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+
+      .pv-loading .spinner {
+        width: 34px;
+        height: 34px;
+        border-width: 3px;
+        /* covers the browser's own spinner underneath */
+        box-shadow: 0 0 0 26px rgba(10, 10, 10, 0.94);
+        margin-bottom: 18px;
+      }
+
+      .pv-loading .pct {
+        color: #cfccc4;
+      }
+
+      .preview-box.loading .pv-loading {
+        opacity: 1;
+      }
+
+      .btn .spinner {
+        width: 14px;
+        height: 14px;
+      }
+
+      .top-loader {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 40;
+        height: 2px;
+        overflow: hidden;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .top-loader.on {
+        opacity: 1;
+      }
+
+      .top-loader::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 35%;
+        background: linear-gradient(90deg, transparent, var(--volt), transparent);
+        animation: slide 1.1s ease-in-out infinite;
+      }
+
+      @keyframes slide {
+        from {
+          left: -35%;
+        }
+        to {
+          left: 100%;
+        }
+      }
+
+      .load-note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+      }
+
+      .load-note .spinner {
+        width: 12px;
+        height: 12px;
+        color: var(--volt);
+      }
+
       .thumb img,
       .thumb video {
         width: 100%;
@@ -820,6 +978,7 @@
     </style>
   </head>
   <body>
+    <div class="top-loader" id="topLoader" aria-hidden="true"></div>
     <header class="top">
       <div class="brand">
         <span class="brand-mark">JA</span>
@@ -844,6 +1003,7 @@
       <section class="panel" aria-labelledby="listTitle">
         <div class="panel-head">
           <h2 id="listTitle">Videos <span class="count mono" id="count"></span></h2>
+          <span class="load-note mono" id="thumbNote" hidden aria-live="polite"><i class="spinner"></i><span></span></span>
           <button class="btn btn-volt btn-sm" type="button" id="addBtn">+ Add video</button>
         </div>
         <div class="list-tools">
@@ -913,6 +1073,7 @@
               <div class="preview">
                 <div class="preview-box" id="pvBox">
                   <video id="pv" muted loop playsinline controls preload="metadata"></video>
+                  <div class="pv-loading" role="status" aria-live="polite"><i class="spinner"></i><span id="pvLoadText">Loading video…</span><span class="pct" id="pvPct"></span></div>
                   <div class="ov"><b id="pvTitle"></b><span class="hint" id="pvType"></span></div>
                 </div>
                 <div class="preview-status mono" id="pvStatus"></div>
@@ -1151,6 +1312,85 @@
         return c ? c.label : id || "—";
       }
 
+      /* Thumbnails are cached by file so re-rendering the list never reloads them. */
+      const thumbCache = new Map();
+      const thumbIO = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((en) => {
+            if (!en.isIntersecting) return;
+            const m = en.target.querySelector("[data-src]");
+            if (m) {
+              m.src = m.dataset.src;
+              m.removeAttribute("data-src");
+            }
+            thumbIO.unobserve(en.target);
+          }) || updateThumbNote(),
+        { root: null, rootMargin: "200px 0px" }
+      );
+
+      function makeThumb(key) {
+        const box = document.createElement("span");
+        box.className = "thumb skel";
+        box.dataset.key = key;
+        if (!key) {
+          box.classList.add("loaded");
+          return box;
+        }
+        const isImg = key.startsWith("img:");
+        const file = key.slice(4);
+        const m = document.createElement(isImg ? "img" : "video");
+        if (isImg) m.alt = "";
+        else {
+          m.muted = true;
+          m.preload = "metadata";
+          m.playsInline = true;
+        }
+        m.dataset.src = (isImg ? P : V) + encodeURI(file) + (isImg ? "" : "#t=0.5");
+        const done = () => {
+          box.classList.add("loaded");
+          updateThumbNote();
+        };
+        m.addEventListener(isImg ? "load" : "loadeddata", done, { once: true });
+        m.addEventListener("error", () => {
+          box.classList.add("loaded", "failed");
+          box.title = "File not found";
+          updateThumbNote();
+        }, { once: true });
+        box.appendChild(m);
+        return box;
+      }
+
+      function updateThumbNote() {
+        const boxes = $$("#list .thumb");
+        const left = boxes.filter((b) => !b.classList.contains("loaded") && !b.querySelector("[data-src]")).length;
+        const note = $("#thumbNote");
+        note.hidden = !left;
+        $("span", note).textContent = "Loading " + left + " thumbnail" + (left === 1 ? "" : "s");
+        setLoading("thumbs", left > 0);
+      }
+
+      function mountThumbs() {
+        $$("#list .thumb").forEach((ph) => {
+          const key = ph.dataset.key, ck = ph.dataset.cache;
+          let box = thumbCache.get(ck);
+          if (!box) {
+            box = makeThumb(key);
+            if (key) thumbCache.set(ck, box);
+          }
+          ph.replaceWith(box);
+          if (box.querySelector("[data-src]")) thumbIO.observe(box);
+        });
+        updateThumbNote();
+      }
+
+      /* top progress bar: on while anything is loading */
+      const loadingWhat = new Set();
+      function setLoading(what, on) {
+        if (on) loadingWhat.add(what);
+        else loadingWhat.delete(what);
+        $("#topLoader").classList.toggle("on", loadingWhat.size > 0);
+      }
+
       function renderList() {
         const q = $("#search").value.trim().toLowerCase();
         const cf = $("#catFilter").value;
@@ -1164,14 +1404,13 @@
           ? shown
               .map((p) => {
                 const i = data.projects.indexOf(p);
-                const thumb = p.poster
-                  ? '<img src="' + P + encodeURI(p.poster) + '" alt="" loading="lazy">'
-                  : p.src ? '<video src="' + encodeURI(V + p.src) + '#t=0.5" muted preload="metadata"></video>' : "";
+                const thumbKey = p.poster ? "img:" + p.poster : p.src ? "vid:" + p.src : "";
+                const cacheKey = p.id + "|" + thumbKey;
                 return (
                   '<li class="item' + (p.id === selId ? " sel" : "") + (p.hidden ? " is-hidden" : "") + '" data-id="' + esc(p.id) + '"' +
                   (filtering ? "" : ' draggable="true"') + '>' +
                   '<span class="grip" aria-hidden="true">' + (filtering ? "" : "⋮⋮") + "</span>" +
-                  '<span class="thumb">' + thumb + "</span>" +
+                  '<span class="thumb" data-key="' + esc(thumbKey) + '" data-cache="' + esc(cacheKey) + '"></span>' +
                   '<span style="min-width:0"><span class="item-title">' + esc(p.title || "Untitled") + "</span>" +
                   '<span class="item-meta"><span class="pill">' + esc(catLabel(p.cat)) + "</span>" +
                   (p.lang ? '<span class="pill lang">' + esc(p.lang) + "</span>" : "") +
@@ -1186,6 +1425,7 @@
               })
               .join("")
           : '<li class="empty-state">No videos match.</li>';
+        mountThumbs();
       }
 
       function renderCats() {
@@ -1251,12 +1491,35 @@
           pv.setAttribute("data-src", src);
           st.textContent = src ? "Loading…" : "No video file set";
           st.classList.toggle("bad", !src);
-          if (src) pv.src = src + "#t=0.5";
-          else pv.removeAttribute("src");
+          if (src) {
+            pvLoading(true, "Loading video…");
+            pv.src = src + "#t=0.5";
+          } else {
+            pvLoading(false);
+            pv.removeAttribute("src");
+          }
         }
         if (poster) pv.poster = poster;
         else pv.removeAttribute("poster");
       }
+
+      function pvLoading(on, text) {
+        $("#pvBox").classList.toggle("loading", on);
+        if (text) $("#pvLoadText").textContent = text;
+        if (!on) $("#pvPct").textContent = "";
+        setLoading("preview", on);
+      }
+      const pvEl = $("#pv");
+      pvEl.addEventListener("loadeddata", () => pvLoading(false));
+      pvEl.addEventListener("canplay", () => pvLoading(false));
+      pvEl.addEventListener("playing", () => pvLoading(false));
+      pvEl.addEventListener("waiting", () => pvEl.src && pvLoading(true, "Buffering…"));
+      pvEl.addEventListener("seeking", () => pvEl.readyState < 3 && pvLoading(true, "Buffering…"));
+      pvEl.addEventListener("progress", () => {
+        if (!pvEl.duration || !pvEl.buffered.length || !$("#pvBox").classList.contains("loading")) return;
+        const pct = Math.min(100, Math.round((pvEl.buffered.end(pvEl.buffered.length - 1) / pvEl.duration) * 100));
+        $("#pvPct").textContent = pct + "% buffered";
+      });
 
       $("#pv").addEventListener("loadedmetadata", (e) => {
         const v = e.target, st = $("#pvStatus");
@@ -1266,6 +1529,8 @@
         if (p && v.videoWidth > v.videoHeight && !p.wide) st.textContent += " · landscape — tick 16:9?";
       });
       $("#pv").addEventListener("error", () => {
+        if (!pvEl.getAttribute("src")) return;
+        pvLoading(false);
         const st = $("#pvStatus");
         st.classList.add("bad");
         st.textContent = "File not found here — upload it to assets/video/ (or check the name).";
@@ -1532,6 +1797,13 @@
         else m.textContent = text;
       }
 
+      function publishBusy(on, label) {
+        const b = $("#publishBtn");
+        b.disabled = on;
+        b.innerHTML = on ? '<i class="spinner"></i>' + esc(label || "Publishing…") : "Publish";
+        setLoading("publish", on);
+      }
+
       async function waitForLive(content) {
         const t0 = Date.now();
         while (Date.now() - t0 < 4 * 60 * 1000) {
@@ -1550,6 +1822,7 @@
         if (!password) return $("#pw").focus();
         const rememberChoice = $("#rememberPw").checked;
         busy = true;
+        publishBusy(true);
         renderPublish();
         message("");
         $("#ocSteps").hidden = false;
@@ -1568,6 +1841,7 @@
         }
         busy = false;
         if (!res || !res.ok) {
+          publishBusy(false);
           stepState("commit", "fail");
           if (res && res.status === 401) {
             try { localStorage.removeItem(PW_KEY); } catch (e) {}
@@ -1594,11 +1868,14 @@
         renderPublish();
         if (j.unchanged) {
           ["deploy", "live"].forEach((n) => stepState(n, "done"));
+          publishBusy(false);
           return message("Nothing new to publish — the live site already matches.", "good");
         }
         stepState("deploy", "doing");
+        publishBusy(true, "Deploying…");
         message('Saved to GitHub' + (j.url ? ' (<a href="' + esc(j.url) + '" target="_blank" rel="noopener">commit</a>)' : "") + ". Waiting for Vercel…", "", true);
         const live = await waitForLive(j.content);
+        publishBusy(false);
         if (live) {
           stepState("deploy", "done");
           stepState("live", "done");

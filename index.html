@@ -1110,6 +1110,108 @@
         pointer-events: none;
       }
 
+      /* loading skeleton until the first frame arrives */
+      .media.skel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.07) 50%, transparent 80%);
+        background-size: 200% 100%;
+        animation: shimmer 1.3s linear infinite;
+        pointer-events: none;
+      }
+
+      .media.skel video {
+        opacity: 0;
+      }
+
+      .media video {
+        transition:
+          opacity 0.4s,
+          transform 0.8s var(--ease);
+      }
+
+      @keyframes shimmer {
+        from { background-position: 150% 0; }
+        to { background-position: -50% 0; }
+      }
+
+      .spin {
+        display: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 3px solid #000;
+        border-right-color: transparent;
+        animation: spin 0.7s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .media.buffering .media-play {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .media.buffering .media-play svg {
+        display: none;
+      }
+
+      .media.buffering .media-play .spin {
+        display: block;
+      }
+
+      .v-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: var(--volt);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+
+      .v-loading .ring {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 3px solid rgba(232, 255, 58, 0.2);
+        border-top-color: var(--volt);
+        animation: spin 0.8s linear infinite;
+        /* covers the browser's own spinner underneath */
+        box-shadow: 0 0 0 34px rgba(10, 10, 10, 0.94);
+        margin-bottom: 22px;
+      }
+
+      .v-loading .pct {
+        color: #bdb9b0;
+      }
+
+      .v-stage.loading .v-loading {
+        opacity: 1;
+      }
+
+      .v-stage.failed .v-loading {
+        opacity: 1;
+        color: #ff8a82;
+      }
+
+      .v-stage.failed .v-loading .ring {
+        display: none;
+      }
+
       .media-play svg {
         width: 18px;
         height: 18px;
@@ -2512,6 +2614,7 @@
       </div>
       <div class="v-stage" id="vStage">
         <video id="vVideo" controls playsinline preload="auto" controlslist="nodownload" disablepictureinpicture></video>
+        <div class="v-loading" role="status" aria-live="polite"><span class="ring"></span><span id="vLoadText">Loading video…</span><span class="pct" id="vPct"></span></div>
       </div>
       <div class="v-bot">
         <span class="v-count mono" id="vCount"></span>
@@ -2609,10 +2712,10 @@
         const badges = (p.lang ? '<span class="badge lang">' + p.lang + "</span>" : "") + (p.cat === "featured" ? '<span class="badge">★</span>' : "");
         return (
           '<article class="card' + (p.wide ? " wide" : "") + ' reveal" data-cat="' + p.cat + '" data-id="' + p.id + '">' +
-          '<button class="media" type="button" data-cursor="PLAY" aria-label="Play ' + esc(p.title) + " — " + esc(p.type) + '">' +
+          '<button class="media' + (p.poster ? "" : " skel") + '" type="button" data-cursor="PLAY" aria-label="Play ' + esc(p.title) + " — " + esc(p.type) + '">' +
           '<video muted loop playsinline preload="none" data-src="' + encodeURI(V + p.src) + '#t=0.5"' + poster + "></video>" +
           '<span class="media-top"><span class="clip-id">CLIP ' + pad(i + 1) + '</span><span class="badges">' + badges + "</span></span>" +
-          '<span class="media-play">' + playSvg + "</span>" +
+          '<span class="media-play">' + playSvg + '<span class="spin"></span></span>' +
           '<span class="media-bot"><span><span class="card-title">' + esc(p.title) + '</span><span class="card-type">' + esc(p.type) + '</span></span><span class="dur"></span></span>' +
           '<span class="progress"></span>' +
           "</button></article>"
@@ -2637,7 +2740,13 @@
       cards.forEach((c) => {
         loadIO.observe(c);
         const v = $("video", c), dur = $(".dur", c), bar = $(".progress", c);
+        const m = $(".media", c);
         v.addEventListener("loadedmetadata", () => (dur.textContent = fmtDur(v.duration)));
+        v.addEventListener("loadeddata", () => m.classList.remove("skel"));
+        v.addEventListener("error", () => m.classList.remove("skel"));
+        v.addEventListener("waiting", () => !v.paused && m.classList.add("buffering"));
+        v.addEventListener("playing", () => m.classList.remove("buffering"));
+        v.addEventListener("pause", () => m.classList.remove("buffering"));
         v.addEventListener("timeupdate", () => {
           if (v.duration) bar.style.transform = "scaleX(" + v.currentTime / v.duration + ")";
         });
@@ -2715,9 +2824,29 @@
         $("#vPrev").hidden = $("#vNext").hidden = list.length < 2;
         vStage.classList.toggle("landscape", !!p.wide);
         vv.poster = p.poster ? P + p.poster : "";
+        vLoading(true, "Loading video…");
         vv.src = encodeURI(V + p.src);
         vv.play().catch(() => {});
       }
+      function vLoading(on, text) {
+        vStage.classList.remove("failed");
+        vStage.classList.toggle("loading", on);
+        if (text) $("#vLoadText").textContent = text;
+        if (!on) $("#vPct").textContent = "";
+      }
+      vv.addEventListener("canplay", () => vLoading(false));
+      vv.addEventListener("playing", () => vLoading(false));
+      vv.addEventListener("waiting", () => vv.getAttribute("src") && vLoading(true, "Buffering…"));
+      vv.addEventListener("progress", () => {
+        if (!vStage.classList.contains("loading") || !vv.duration || !vv.buffered.length) return;
+        $("#vPct").textContent = Math.min(100, Math.round((vv.buffered.end(vv.buffered.length - 1) / vv.duration) * 100)) + "%";
+      });
+      vv.addEventListener("error", () => {
+        if (!vv.getAttribute("src")) return;
+        vLoading(false);
+        vStage.classList.add("failed");
+        $("#vLoadText").textContent = "Couldn't load this video. Please try again.";
+      });
       function open(project, from) {
         list = from || [project];
         $$(".card video").forEach((v) => v.pause());
@@ -2729,6 +2858,7 @@
       }
       function close() {
         vv.pause();
+        vLoading(false);
         vv.removeAttribute("src");
         vv.load();
         dlg.close();
